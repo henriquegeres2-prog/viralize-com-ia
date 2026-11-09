@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Crie uma série animada para Reels e TikTok sem saber desenhar nem editar, usando IA.">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>Série Animada com IA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: visual escuro de "estreia", com blocos em grade (bento), luz de palco atrás do celular e uma única cor de ação (amarelo) */
+:root{
+  --bg:#0d0a14; --panel:#16111f; --panel2:#1e1729; --ink:#f6f1ff; --muted:#a79bbd; --line:#2c2340;
+  --yellow:#ffd23f; --yellow-ink:#16111f; --violet:#8b5cf6; --pink:#ff5fa2; --green:#3ddc97;
+  --display:"Bricolage Grotesque","Arial Black",sans-serif; --body:"Figtree",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.in{max-width:1120px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0}
+section{padding-block:88px;scroll-margin-top:70px}
+.kicker{display:inline-flex;align-items:center;gap:8px;font:800 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--yellow)}
+.kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--yellow);box-shadow:0 0 12px var(--yellow)}
+.head{display:grid;gap:14px;margin-bottom:44px;max-width:680px}
+.head.c{margin-inline:auto;text-align:center;justify-items:center}
+.head h2{font-size:clamp(34px,5.6vw,58px);font-weight:800}
+.head p{color:var(--muted);font-size:19px}
+.hl{color:var(--yellow)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--yellow);color:var(--yellow-ink);font:800 18px var(--body);padding:16px 28px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 10px 30px #ffd23f33}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 0 0 6px #ffd23f22,0 14px 34px #ffd23f44}
+.btn .arr{transition:transform .15s}.btn:hover .arr{transform:translateX(4px)}
+.btn.line{background:transparent;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.btn.line:hover{border-color:var(--ink);box-shadow:none}
+.btn:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
+.checks{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--muted)}
+.checks span::before{content:"✓";color:var(--green);font-weight:800;margin-right:6px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+.promo{background:linear-gradient(90deg,var(--violet),var(--pink));color:#fff;font-weight:700;font-size:14px;text-align:center;padding:9px max(16px,env(safe-area-inset-right,0px)) 9px max(16px,env(safe-area-inset-left,0px))}
+.promo b{background:#0003;padding:2px 8px;border-radius:6px}
+.clock{font-variant-numeric:tabular-nums;font-weight:800}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:19;background:#0d0a14d9;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .in{display:flex;justify-content:space-between;align-items:center;height:64px;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;font:800 19px var(--display);color:var(--ink);text-decoration:none}
+.logo i{width:30px;height:30px;border-radius:9px;background:var(--yellow);color:var(--yellow-ink);display:grid;place-items:center;font-style:normal}
+.top nav{display:flex;gap:26px;align-items:center}
+.top nav a:not(.btn){color:var(--muted);text-decoration:none;font-weight:500;font-size:15px}
+.top nav a:not(.btn):hover{color:var(--ink)}
+.top .btn{padding:10px 18px;font-size:15px}
+.hero{padding-block:64px 40px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.hero>*{min-width:0}
+.hero-copy{display:grid;gap:24px}
+.hero h1{font-size:clamp(46px,7.6vw,92px);font-weight:800}
+.hero h1 .u{position:relative;white-space:nowrap}
+.hero h1 .u svg{position:absolute;left:0;bottom:-.12em;width:100%;height:.28em}
+.lede{font-size:20px;color:var(--muted);max-width:32ch}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.stage{position:relative;display:grid;place-items:center;padding-block:20px}
+.stage::before{content:"";position:absolute;width:110%;max-width:520px;aspect-ratio:1;background:radial-gradient(closest-side,#8b5cf655,#ff5fa222 55%,transparent);filter:blur(10px)}
+.phone{position:relative;width:min(290px,100%);aspect-ratio:9/16;border-radius:40px;border:10px solid #000;background:linear-gradient(#a9d8ff 0 68%,#f2c48f 68%);overflow:hidden;box-shadow:0 30px 80px #000a,0 0 0 1.5px #ffffff22;transform:rotate(-4deg)}
+.score{position:absolute;top:16px;left:12px;right:12px;display:flex;justify-content:space-between;font:800 13px var(--display);color:#fff}
+.score b{background:#16111f;padding:4px 10px;border-radius:10px}
+.score i{font-style:normal;color:var(--yellow)}
+.cap{position:absolute;top:24%;left:0;right:0;text-align:center;font:800 34px/1 var(--display);color:#fff;-webkit-text-stroke:7px #16111f;paint-order:stroke fill}
+.cap span{display:inline-block;animation:pop 2.4s infinite}.cap .y{color:var(--yellow)}
+@keyframes pop{0%{transform:scale(.6)}12%{transform:scale(1.12)}20%,100%{transform:scale(1)}}
+.gran{position:absolute;bottom:17%;left:50%;width:124px;transform:translateX(-50%);animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateX(-50%) translateY(-6px)}}
+.vote{position:absolute;bottom:12px;left:12px;right:12px;display:flex;gap:6px}
+.vote span{flex:1;text-align:center;background:#fff;color:#16111f;border:3px solid #16111f;border-radius:10px;font:800 14px var(--display);padding:4px}
+.chip{position:absolute;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-size:14px;font-weight:700;box-shadow:0 14px 30px #0008;display:flex;gap:8px;align-items:center;white-space:nowrap}
+.chip.a{top:10%;left:2%;transform:rotate(-3deg)}.chip.b{bottom:14%;right:0;transform:rotate(3deg)}
+.chip b{color:var(--yellow)}
+@media (prefers-reduced-motion:reduce){.cap span,.gran,.track{animation:none}}
+.marquee{border-block:1px solid var(--line);overflow:hidden;padding-block:16px;background:var(--panel)}
+.track{display:flex;gap:40px;width:max-content;animation:slide 30s linear infinite;font:800 22px var(--display);color:var(--muted);white-space:nowrap}
+.track span::after{content:"✦";color:var(--yellow);margin-left:40px}
+@keyframes slide{to{transform:translateX(-50%)}}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:28px;display:grid;gap:12px;align-content:start;min-width:0}
+.tile h3{font-size:26px;font-weight:800}
+.tile p{color:var(--muted)}
+.t1{grid-column:span 4}.t2,.t3,.t4,.t5{grid-column:span 2}.t3{grid-column:span 2}
+.num{font:800 64px/1 var(--display);color:var(--yellow)}
+.tag{justify-self:start;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#ffffff10;padding:5px 10px;border-radius:99px}
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.flow div{background:var(--panel2);border-radius:16px;padding:14px;display:grid;gap:4px}
+.flow b{font:800 18px var(--display)}
+.flow small{color:var(--muted);font-size:13px}
+.flow i{font-style:normal;font-size:22px}
+.try{display:grid;grid-template-columns:.85fr 1.15fr;gap:16px}
+.try>*{min-width:0}
+.try-form{background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:28px;display:grid;gap:16px;align-content:start}
+.try-form label{font-weight:700;font-size:14px;display:grid;gap:8px;color:var(--muted)}
+.try-form select{width:100%;padding:14px;border:1.5px solid var(--line);border-radius:14px;font:600 16px var(--body);background:var(--panel2);color:var(--ink)}
+.try-out{background:linear-gradient(160deg,#2a1b4a,#1a1226);border:1px solid #3d2c63;border-radius:26px;padding:28px;display:grid;gap:16px;align-content:start}
+.try-out .ttl{font:800 30px/1.05 var(--display)}
+.meta{display:flex;gap:8px;flex-wrap:wrap}.meta span{background:#ffffff12;font-weight:700;font-size:13px;padding:5px 11px;border-radius:99px}
+.meta b{color:var(--yellow)}
+.ep{display:grid;gap:6px}.ep small{font-weight:800;color:var(--yellow);text-transform:uppercase;letter-spacing:.1em;font-size:12px}
+.votes{display:flex;gap:8px}.votes span{flex:1;text-align:center;background:#fff;color:#16111f;border-radius:12px;font:800 16px var(--display);padding:8px}
+.unlock{border-top:1px dashed #ffffff30;padding-top:16px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.unlock p{color:var(--muted);font-size:15px;max-width:32ch}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vs>div{border-radius:26px;padding:30px;display:grid;gap:14px;align-content:start}
+.vs h3{font-size:24px}
+.vs ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.vs li{display:flex;gap:10px}
+.bad{background:var(--panel);border:1px solid var(--line);color:var(--muted)}
+.bad li::before{content:"✕";color:var(--pink);font-weight:800}
+.good{background:var(--yellow);color:var(--yellow-ink)}
+.good li::before{content:"✓";font-weight:800}
+.toc{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.ch{display:flex;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px 20px;transition:border-color .15s,transform .15s;min-width:0}
+.ch:hover{border-color:var(--violet);transform:translateY(-2px)}
+.ch .n{flex:none;width:44px;height:44px;border-radius:14px;background:var(--panel2);display:grid;place-items:center;font:800 20px var(--display);color:var(--yellow)}
+.ch div{min-width:0}.ch h3{font-size:19px}.ch p{color:var(--muted);font-size:15px}
+.ch.bonus{grid-column:1/-1;background:linear-gradient(90deg,var(--violet),var(--pink));border:0}
+.ch.bonus .n{background:#fff;color:#16111f}.ch.bonus p{color:#ffffffd0}
+.fit{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fit>div{background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:30px;display:grid;gap:14px;align-content:start}
+.fit h3{font-size:24px}.fit ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.fit li{display:flex;gap:10px;color:var(--muted)}
+.fit .y li::before{content:"✓";color:var(--green);font-weight:800}
+.fit .n li::before{content:"✕";color:var(--pink);font-weight:800}
+.card{position:relative;max-width:560px;margin:0 auto;border-radius:32px;padding:2px;background:linear-gradient(140deg,var(--yellow),var(--pink),var(--violet));box-shadow:0 30px 90px #8b5cf640}
+.card-in{background:var(--panel);border-radius:30px;padding:34px;display:grid;gap:22px}
+.badge{justify-self:center;background:var(--pink);color:#fff;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:99px}
+.card h3{font-size:30px;text-align:center}
+.stack{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.stack li{display:flex;gap:12px;align-items:flex-start}
+.stack li::before{content:"✓";flex:none;width:24px;height:24px;border-radius:50%;background:#3ddc9722;color:var(--green);display:grid;place-items:center;font-weight:800;font-size:13px;margin-top:1px}
+.price{text-align:center;display:grid;gap:4px}
+.old{color:var(--muted);font-size:20px;font-weight:700;text-decoration:line-through;text-decoration-color:var(--pink)}
+.v{font:800 84px/1 var(--display);color:var(--yellow)}
+.v sup{font-size:.32em;vertical-align:1.3em;margin-right:4px;color:var(--ink)}
+.price small{color:var(--muted)}
+.save{justify-self:center;background:#3ddc9722;color:var(--green);font-weight:800;font-size:14px;padding:5px 12px;border-radius:99px}
+.timer{display:flex;justify-content:center;gap:8px}
+.timer div{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px;min-width:66px;text-align:center}
+.timer b{display:block;font:800 28px/1 var(--display);font-variant-numeric:tabular-nums}
+.timer small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.tlabel{text-align:center;color:var(--muted);font-weight:700;font-size:14px}
+.card .btn{width:100%;font-size:20px;padding:19px}
+.guar{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:18px 20px;position:relative;z-index:1}
+.seal{width:64px;height:64px;border-radius:18px;background:linear-gradient(140deg,var(--green),#2bb37f);color:#0d0a14;display:grid;place-items:center;align-content:center;font:800 26px/1 var(--display);text-align:center;box-shadow:0 8px 20px #3ddc9733}
+.seal small{display:block;font:800 10px var(--body);letter-spacing:.1em;margin-top:2px}
+.guar p{font-size:15px;line-height:1.5;color:var(--muted);margin:0}.guar strong{display:block;color:var(--ink);font:800 18px var(--display);margin-bottom:2px}
+.ended .launch-only{display:none!important}
+.heropromo{justify-self:start;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--panel);border:1.5px dashed var(--pink);border-radius:18px;padding:12px 18px}
+.heropromo .pct{background:var(--pink);color:#fff;font:800 20px var(--display);padding:6px 12px;border-radius:12px;transform:rotate(-4deg)}
+.heropromo s{color:var(--muted);font-weight:700;margin-right:8px;text-decoration-color:var(--pink)}
+.heropromo b{font:800 28px var(--display);color:var(--yellow)}
+.heropromo small{color:var(--muted);font-weight:700;font-size:13px;flex-basis:100%}
+.promo{font-size:15px}.promo s{opacity:.85}.promo b,.promo s{white-space:nowrap}
+.faq{display:grid;gap:10px;max-width:780px;margin:0 auto}
+details{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:2px 22px}
+summary{cursor:pointer;font:700 18px var(--body);padding:17px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:800 26px/1 var(--display);color:var(--yellow);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);padding-bottom:18px}
+.final .box{background:var(--yellow);color:var(--yellow-ink);border-radius:36px;padding:64px 24px;display:grid;gap:20px;justify-items:center;text-align:center}
+.final h2{font-size:clamp(36px,6vw,66px);font-weight:800;max-width:16ch}
+.final p{font-size:19px;font-weight:600}
+.final .btn{background:var(--yellow-ink);color:var(--yellow);box-shadow:none}
+footer{padding-block:32px 110px;color:var(--muted);font-size:14px;text-align:center}
+.mbar{position:fixed;left:0;right:0;bottom:0;z-index:19;background:#16111ff2;backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:none;gap:12px;align-items:center;justify-content:space-between;transform:translateY(110%);transition:transform .25s}
+.mbar.show{transform:none}
+.mbar b{font:800 24px var(--display);color:var(--yellow);display:block;line-height:1}
+.mbar small{color:var(--muted);font-size:12px}
+.mbar .btn{padding:12px 20px;font-size:16px}
+@media (max-width:900px){.top nav a:not(.btn){display:none}.t2,.t3,.t4,.t5{grid-column:span 3}.t1{grid-column:1/-1}}
+@media (max-width:760px){
+  section{padding-block:64px}
+  .hero{grid-template-columns:1fr;padding-block:36px 24px}
+  .try,.vs,.fit,.toc{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr}.t1,.t2,.t3,.t4,.t5{grid-column:auto}
+  .flow{grid-template-columns:1fr}
+  .mbar{display:flex}
+  .chip.a{left:-2px}.chip.b{right:-2px}
+}
+@media (max-width:480px){.actions .btn{width:100%}.card-in{padding:24px}.v{font-size:72px}.top .btn{padding:9px 14px;font-size:14px}.logo{font-size:16px}}
+</style>
+</head>
+<body>
+
+<div class="promo launch-only">🔥 PROMOÇÃO: de <s>R$ 59,90</s> por apenas <b>R$ 27,90</b> · 53% OFF</div>
+<header class="top">
+  <div class="in">
+    <a class="logo" href="#inicio"><i>★</i>Série Animada com IA</a>
+    <nav>
+      <a href="#teste">Teste grátis</a>
+      <a href="#conteudo">Conteúdo</a>
+      <a href="#faq">Dúvidas</a>
+      <a class="btn" href="#oferta">🔥 R$ <span data-price>27,90</span></a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+<div class="in hero" id="hero">
+  <div class="hero-copy">
+    <span class="kicker">Guia passo a passo com IA</span>
+    <h1>Poste hoje o <span class="u hl">1º episódio<svg viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><path d="M3 14 Q60 2 100 10 T197 8" fill="none" stroke="#ff5fa2" stroke-width="6" stroke-linecap="round"/></svg></span> da sua série animada</h1>
+    <p class="lede">Sem desenhar, sem editar, sem programar. Você cola os prompts prontos e a IA entrega o vídeo animado, com voz, legendas e votação.</p>
+    <div class="actions">
+      <a class="btn" href="#oferta">Quero criar minha série <span class="arr">→</span></a>
+      <a class="btn line" href="#teste">Testar grátis</a>
+    </div>
+    <div class="checks"><span>Acesso imediato</span><span>Pagamento único</span><span>Garantia de 7 dias</span></div>
+    <div class="heropromo"><span class="pct">-53%</span><div><s>R$ 59,90</s><b>R$ 27,90</b></div><small>Preço promocional · você economiza R$ 32,00</small></div>
+  </div>
+  <div class="stage">
+    <div class="phone" role="img" aria-label="Exemplo de episódio com personagem animada, placar e votação">
+      <div class="score"><b>DIA <i>1</i>/30</b><b><i>12</i> SEGUIDORES</b></div>
+      <div class="cap"><span>TRINTA<br>DIAS PRA <span class="y">VIRALIZAR</span></span></div>
+      <svg class="gran" viewBox="0 0 120 170" aria-hidden="true">
+        <rect x="28" y="88" width="64" height="66" rx="22" fill="#8e4fe0" stroke="#16111f" stroke-width="5"/>
+        <rect x="40" y="150" width="14" height="16" rx="4" fill="#fff" stroke="#16111f" stroke-width="4"/>
+        <rect x="66" y="150" width="14" height="16" rx="4" fill="#fff" stroke="#16111f" stroke-width="4"/>
+        <circle cx="60" cy="56" r="36" fill="#f5c9a6" stroke="#16111f" stroke-width="5"/>
+        <path d="M26 46c0-30 68-30 68 0c-8-14-60-14-68 0z" fill="#fff" stroke="#16111f" stroke-width="5"/>
+        <circle cx="46" cy="58" r="10" fill="#fff" stroke="#e5383b" stroke-width="5"/>
+        <circle cx="74" cy="58" r="10" fill="#fff" stroke="#e5383b" stroke-width="5"/>
+        <circle cx="46" cy="59" r="4" fill="#16111f"/><circle cx="74" cy="59" r="4" fill="#16111f"/>
+        <path d="M50 76q10 9 20 0" fill="none" stroke="#16111f" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="36" cy="72" r="5" fill="#f28b9a"/><circle cx="84" cy="72" r="5" fill="#f28b9a"/>
+      </svg>
+      <div class="vote"><span>BOLO</span><span>REACT</span></div>
+    </div>
+    <div class="chip a">🎙️ Voz pronta em <b>10 min</b></div>
+    <div class="chip b">🎬 Episódio em <b>&lt; 1 hora</b></div>
+  </div>
+</div>
+
+<div class="marquee" aria-hidden="true"><div class="track">
+  <span>Personagem que não muda de cara</span><span>Legendas animadas</span><span>Voz de narrador com IA</span><span>Votação nos comentários</span><span>Reels e TikTok</span>
+  <span>Personagem que não muda de cara</span><span>Legendas animadas</span><span>Voz de narrador com IA</span><span>Votação nos comentários</span><span>Reels e TikTok</span>
+</div></div>
+
+<section id="teste">
+  <div class="in">
+    <div class="head"><span class="kicker">Teste grátis</span><h2>Descubra a sua série em <span class="hl">10 segundos</span></h2><p>Escolha duas opções e veja a série que você pode lançar esta semana.</p></div>
+    <div class="try">
+      <div class="try-form">
+        <label for="t1">Personagem<select id="t1">
+          <option value="0">Avó que não entende de internet</option>
+          <option value="1">Cachorro que quer virar humano</option>
+          <option value="2">Estagiário atrapalhado</option>
+          <option value="3">Jovem sedentário</option>
+          <option value="4">Recém-casada na cozinha</option>
+        </select></label>
+        <label for="t2">Meta em 30 dias<select id="t2">
+          <option value="0">Chegar a 10 mil seguidores</option>
+          <option value="1">Correr uma maratona</option>
+          <option value="2">Juntar R$ 3.000</option>
+          <option value="3">Conquistar o crush</option>
+        </select></label>
+        <button class="btn" id="tgo" type="button">Gerar minha série ✨</button>
+      </div>
+      <div class="try-out" aria-live="polite">
+        <div class="ttl" id="tt"></div>
+        <div class="meta"><span>30 episódios</span><span>Placar: <b id="tp"></b></span></div>
+        <div class="ep"><small>Gancho do Episódio 1</small><p id="th"></p></div>
+        <div class="ep"><small>Votação do Episódio 1</small><div class="votes"><span id="va"></span><span id="vb"></span></div></div>
+        <div class="unlock"><p>No guia, você transforma isso em personagem desenhado, roteiro, voz e vídeo pronto.</p><a class="btn" href="#oferta">Fazer essa série <span class="arr">→</span></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="in">
+    <div class="head"><span class="kicker">Como funciona</span><h2>A IA faz o trabalho pesado. <span class="hl">Você só cola.</span></h2></div>
+    <div class="bento">
+      <div class="tile t1"><span class="tag">Todo episódio</span><h3>Três passos, menos de 1 hora</h3>
+        <div class="flow">
+          <div><i>📝</i><b>Roteiro</b><small>A IA escreve cenas, narração e legendas</small></div>
+          <div><i>🎙️</i><b>Voz</b><small>A IA narra com voz brasileira e animada</small></div>
+          <div><i>🎬</i><b>Vídeo</b><small>A IA anima e entrega o vídeo pronto</small></div>
+        </div>
+      </div>
+      <div class="tile t2"><div class="num">0</div><h3>Linhas de código escritas por você</h3><p>A IA programa. Você só copia e cola.</p></div>
+      <div class="tile t3"><div class="num">30</div><h3>Episódios planejados</h3><p>Uma série inteira, com começo, virada e final.</p></div>
+      <div class="tile t4"><div class="num">1</div><h3>Personagem fixo</h3><p>Sempre igual, do Dia 1 ao Dia 30.</p></div>
+      <div class="tile t5"><div class="num">9</div><h3>Capítulos práticos</h3><p>Com prompts prontos, checklists e testes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="in">
+    <div class="head c"><span class="kicker">Por que funciona</span><h2>Sem estúdio. Sem editor.</h2></div>
+    <div class="vs">
+      <div class="bad"><h3>Do jeito tradicional</h3><ul>
+        <li>Contratar desenhista e animador</li>
+        <li>Aprender programa de edição</li>
+        <li>Personagem muda de cara a cada vídeo</li>
+        <li>Horas de trabalho por episódio</li>
+      </ul></div>
+      <div class="good"><h3>Com o guia</h3><ul>
+        <li>A IA desenha e anima por você</li>
+        <li>Você só cola prompts prontos</li>
+        <li>Personagem sempre igual</li>
+        <li>Menos de 1 hora por episódio</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="conteudo">
+  <div class="in">
+    <div class="head"><span class="kicker">O que tem dentro</span><h2>Do zero ao episódio postado</h2></div>
+    <div class="toc">
+      <div class="ch"><div class="n">0</div><div><h3>Antes de começar</h3><p>As ferramentas prontas em 5 minutos</p></div></div>
+      <div class="ch"><div class="n">1</div><div><h3>Crie sua série</h3><p>Personagem, meta e votação</p></div></div>
+      <div class="ch"><div class="n">2</div><div><h3>Dê vida ao personagem</h3><p>Personagens, expressões e cenários</p></div></div>
+      <div class="ch"><div class="n">3</div><div><h3>Roteiro do episódio</h3><p>Cenas, narração e legendas</p></div></div>
+      <div class="ch"><div class="n">4</div><div><h3>A voz com IA</h3><p>A narração pronta em MP3</p></div></div>
+      <div class="ch"><div class="n">5</div><div><h3>Edição com IA</h3><p>O vídeo pronto pra postar</p></div></div>
+      <div class="ch"><div class="n">6</div><div><h3>Postar e crescer</h3><p>A rotina diária, em menos de 1 hora</p></div></div>
+      <div class="ch"><div class="n">7</div><div><h3>Viralizar de verdade</h3><p>Ganchos, métricas e análise semanal com IA</p></div></div>
+      <div class="ch"><div class="n">8</div><div><h3>Ganhe 50% indicando</h3><p>Vire afiliado e lucre com cada venda</p></div></div>
+      <div class="ch"><div class="n">★</div><div><h3>Bônus: o prompt mestre</h3><p>Roteirista, desenhista e editor num prompt só</p></div></div>
+      <div class="ch bonus"><div class="n">✓</div><div><h3>Prompts prontos, checklists e gerador da sua série</h3><p>Tudo num guia interativo que abre no celular e salva seu progresso</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="in">
+    <div class="head c"><span class="kicker">Pra quem é</span><h2>Feito pra quem está começando</h2></div>
+    <div class="fit">
+      <div class="y"><h3>É pra você se…</h3><ul>
+        <li>quer criar um perfil e não sabe por onde começar</li>
+        <li>quer um formato diferente de "mais um vídeo de dica"</li>
+        <li>nunca editou um vídeo na vida</li>
+        <li>não quer aparecer nem usar a própria voz</li>
+      </ul></div>
+      <div class="n"><h3>Não é pra você se…</h3><ul>
+        <li>procura uma fórmula garantida de viralizar (ninguém garante isso)</li>
+        <li>não tem um tempinho por dia pra postar</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="oferta">
+  <div class="in">
+    <div class="card"><div class="card-in">
+      <span class="badge launch-only">🔥 Promoção · 53% OFF</span>
+      <h3>Série Animada com IA</h3>
+      <ul class="stack">
+        <li>Guia interativo com 9 capítulos</li>
+        <li>Prompts prontos pra copiar em cada etapa</li>
+        <li>Gerador do prompt da sua série</li>
+        <li>Bônus: o prompt mestre</li>
+        <li>Seja afiliado e ganhe 50% de cada venda</li>
+        <li>Checklists e testes rápidos</li>
+      </ul>
+      <div class="price">
+        <span class="old launch-only">De R$ 59,90</span><span class="launch-only" style="font-weight:800;color:var(--pink);font-size:15px;letter-spacing:.06em">POR APENAS</span>
+        <div class="v"><sup>R$</sup><span data-price>27,90</span></div>
+        <small>Pagamento único · sem mensalidade</small>
+      </div>
+      <span class="save launch-only">Você economiza R$ 32,00 (53% OFF)</span>
+      <a class="btn" href="#" data-checkout>Quero criar minha série <span class="arr">→</span></a>
+      <div class="checks" style="justify-content:center"><span>Pagamento seguro</span><span>Acesso imediato</span></div>
+      <div class="guar"><div class="seal">7<small>DIAS</small></div><p><strong>Garantia de 7 dias</strong>Faça o seu primeiro episódio. Se não gostar do guia, peça o reembolso e receba 100% do valor de volta.</p></div>
+    </div></div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="in">
+    <div class="head c"><span class="kicker">Dúvidas</span><h2>Perguntas frequentes</h2></div>
+    <div class="faq">
+      <details><summary>Preciso saber programar?</summary><p>Não. A IA escreve todo o código; você só cola os prompts.</p></details>
+      <details><summary>E se eu não conseguir fazer?</summary><p>Cada passo tem o prompt pronto e um checklist do que conferir. Se mesmo assim não der certo, você tem 7 dias de garantia: pede o reembolso e recebe tudo de volta.</p></details>
+      <details><summary>Preciso aparecer ou usar minha voz?</summary><p>Não. O personagem é desenhado e a voz é de narrador, gerada por IA. Ninguém precisa saber que é você.</p></details>
+      <details><summary>As ferramentas de IA são pagas?</summary><p>Dá pra começar nos planos grátis, que têm limites. Se a série engatar, o plano mais barato de cada ferramenta por um mês costuma bastar.</p></details>
+      <details><summary>Quanto tempo leva cada episódio?</summary><p>Menos de 1 hora, depois que os personagens estão prontos.</p></details>
+      <details><summary>Como eu recebo?</summary><p>Logo após o pagamento, na área de membros da Kiwify.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="in"><div class="box">
+    <h2>Seu 1º episódio pode sair hoje</h2>
+    <p>R$ <span data-price>27,90</span>, pagamento único. <span class="launch-only">Promoção: de R$ 59,90 por R$ 27,90.</span></p>
+    <a class="btn" href="#oferta">Quero criar minha série <span class="arr">→</span></a>
+  </div></div>
+</section>
+</main>
+
+<footer class="in">Série Animada com IA · Guia passo a passo</footer>
+
+<div class="mbar" id="mbar"><div><b>R$ <span data-price>27,90</span></b><small class="launch-only"><s>R$ 59,90</s> · 53% OFF</small></div><a class="btn" href="#oferta">Garantir</a></div>
+
+<script>
+/* ====== CONFIGURE AQUI ====== */
+const CHECKOUT = "https://pay.kiwify.com.br/B0Ptpug";   // link do checkout de R$ 19,90
+const CHECKOUT_CHEIO = "";                                  // opcional: link do checkout de R$ 39,90 depois do lançamento
+const FIM_LANCAMENTO = new Date("2099-12-31T23:59:59-03:00"); // fim real do preço de lançamento
+const PRECO_CHEIO = "27,90";
+/* ============================ */
+(function(){
+  const ended=()=>Date.now()>=FIM_LANCAMENTO.getTime();
+  function link(){const l=ended()&&CHECKOUT_CHEIO?CHECKOUT_CHEIO:CHECKOUT;return l.startsWith("http")?l:"#oferta"}
+  document.querySelectorAll("[data-checkout]").forEach(a=>{a.href=link();if(a.href.startsWith("http")){a.target="_blank";a.rel="noopener"}});
+  const p=n=>String(n).padStart(2,"0");
+  function tick(){
+    const ms=FIM_LANCAMENTO.getTime()-Date.now();
+    if(ms<=0){document.documentElement.classList.add("ended");document.querySelectorAll("[data-price]").forEach(e=>e.textContent=PRECO_CHEIO);return false}
+    const s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sec=s%60;
+    const txt=(d?d+"d ":"")+p(h)+"h "+p(m)+"m "+p(sec)+"s";
+    document.querySelectorAll("[data-clock]").forEach(e=>e.textContent=txt);
+    const set=(k,v)=>{const e=document.querySelector('[data-t="'+k+'"]');if(e)e.textContent=p(v)};
+    set("d",d);set("h",h);set("m",m);set("s",sec);return true;
+  }
+  if(tick()){const iv=setInterval(()=>{if(!tick())clearInterval(iv)},1000)}
+})();
+(function(){
+  const P=[
+    {n:"Dona Cida",f:1,t:"Dona Cida",who:"a vovó que não entende de internet",gag:"filmou o próprio nariz por quatro minutos"},
+    {n:"Thor",t:"Thor, o vira-lata",who:"o cachorro que quer virar humano",gag:"tentou usar garfo e comeu o guardanapo"},
+    {n:"Felipe",t:"Felipe, o estagiário",who:"o estagiário mais atrapalhado da empresa",gag:"mandou meme no grupo do chefe"},
+    {n:"Beto",t:"Beto do sofá",who:"o cara que não sai do sofá",gag:"cansou só de amarrar o tênis"},
+    {n:"Júlia",f:1,t:"Júlia na cozinha",who:"a recém-casada que nunca cozinhou",gag:"queimou até a água do macarrão"}];
+  const M=[
+    {g:"chegar a 10 mil seguidores",s:"SEGUIDORES",v:["DANCINHA","RECEITA"]},
+    {g:"correr uma maratona",s:"KM CORRIDOS",v:["ACADEMIA","CORRIDA NA RUA"]},
+    {g:"juntar R$ 3.000",s:"R$ GUARDADO",v:["BICO","VENDER COISAS"]},
+    {g:"conquistar o crush",s:"NÍVEL DE CORAGEM",v:["MANDA MENSAGEM","DÁ UM PRESENTE"]}];
+  function run(){
+    const a=P[+document.getElementById("t1").value],b=M[+document.getElementById("t2").value];
+    document.getElementById("tt").textContent=a.t+": 30 dias para "+b.g;
+    document.getElementById("tp").textContent=b.s;
+    document.getElementById("th").textContent=(a.f?"Essa é a ":"Esse é o ")+a.n+", "+a.who+". Tem 30 dias para "+b.g+". No primeiro dia, "+a.gag+".";
+    document.getElementById("va").textContent=b.v[0];document.getElementById("vb").textContent=b.v[1];
+  }
+  ["t1","t2"].forEach(id=>document.getElementById(id).addEventListener("change",run));
+  document.getElementById("tgo").addEventListener("click",run);
+  run();
+})();
+(function(){
+  const bar=document.getElementById("mbar"),hero=document.getElementById("hero"),offer=document.getElementById("oferta");
+  if(!("IntersectionObserver" in window))return;
+  let hv=true,ov=false;const upd=()=>bar.classList.toggle("show",!hv&&!ov);
+  new IntersectionObserver(e=>{hv=e[0].isIntersecting;upd()}).observe(hero);
+  new IntersectionObserver(e=>{ov=e[0].isIntersecting;upd()}).observe(offer);
+})();
+</script>
+</body>
+</html>
